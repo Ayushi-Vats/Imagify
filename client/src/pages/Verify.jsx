@@ -6,21 +6,24 @@ import { toast } from 'react-toastify';
 
 const Verify = () => {
 
-    const [searchParams, setSearchParams] = useSearchParams()
+    const [searchParams] = useSearchParams()
 
-    const success = searchParams.get("success")
-    const transactionId = searchParams.get("transactionId")
+    const razorpay_order_id = searchParams.get("razorpay_order_id")
 
     const { backendUrl, loadCreditsData, token } = useContext(AppContext)
 
     const navigate = useNavigate()
 
-    // Function to verify stripe payment
-    const verifyStripe = async () => {
+    // Verify Razorpay payment
+    const verifyPayment = async () => {
 
         try {
 
-            const { data } = await axios.post(backendUrl + "/api/user/verify-stripe", { success, transactionId }, { headers: { token } })
+            const { data } = await axios.post(
+                backendUrl + "/api/user/verify-razorpay",
+                { razorpay_order_id },
+                { headers: { token } }
+            )
 
             if (data.success) {
                 toast.success(data.message)
@@ -39,8 +42,8 @@ const Verify = () => {
     }
 
     useEffect(() => {
-        if (token) {
-            verifyStripe()
+        if (token && razorpay_order_id) {
+            verifyPayment()
         }
     }, [token])
 
